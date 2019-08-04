@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"gopkg.in/yaml.v3"
@@ -45,6 +46,8 @@ func main() {
 	}
 
 	generateFile(responses)
+	log.Printf("Done! Results are in %s file. Just press Enter to close the window", configuration.OutputFileName)
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
 func request() (responses []*http.Response) {
@@ -61,6 +64,8 @@ func request() (responses []*http.Response) {
 	key := configuration.ApiKey
 
 	for _, website := range configuration.Websites {
+		log.Printf("Getting similar websites for %s...", website)
+
 		url := fmt.Sprintf(SimilarWebApiUrl, website, key)
 
 		response, err := http.Get(url)
@@ -70,6 +75,7 @@ func request() (responses []*http.Response) {
 		}
 
 		responses = append(responses, response)
+		log.Printf("Done getting similar websites for %s", website)
 	}
 
 	return
@@ -78,7 +84,7 @@ func request() (responses []*http.Response) {
 func generateFile(responses []*http.Response) {
 	file, err := os.Create(configuration.OutputFileName)
 	if err != nil {
-		log.Fatal("Cannot create file", err)
+		log.Fatalf("Cannot create %s file", configuration.OutputFileName)
 	}
 	defer file.Close()
 
@@ -111,6 +117,8 @@ func generateFile(responses []*http.Response) {
 		defer file.Close()
 
 		w := csv.NewWriter(file)
+		w.Comma = ';'
+
 		defer w.Flush()
 		w.WriteAll(writeData)
 
