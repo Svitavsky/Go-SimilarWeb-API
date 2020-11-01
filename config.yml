@@ -1,5 +1,5 @@
-apiKey: "5de2a7d7d42b4ffc86c7d57a428b8109"
+apiKey: "YOUR API KEY IS HERE"
 outputFilename: "similar_sites.csv"
 noDuplicates: false
 websites:
-  - fbs.com
+  - example.com
